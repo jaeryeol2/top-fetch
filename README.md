@@ -2,10 +2,8 @@
 
 > **Native Web Fetch API Wrapper Library**  
 > `top-fetch`는 Web 표준 `fetch` API를 기반으로 제작된 경량(Zero-Dependency) 타입안전 HTTP 클라이언트 래퍼 라이브러리입니다.  
-> 브라우저(React, Vue 등 CSR), SSR(Next.js, Nuxt 등), Node.js 백엔드 환경 모두에서 유연하게 동작하도록 설계되었습니다.
 
 - **Author**: 3TOP 커머스플랫폼 1본부
-- **License**: UNLICENSED (Private Project)
 
 ---
 
