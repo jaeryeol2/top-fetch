@@ -2,11 +2,19 @@
   "name": "top-fetch",
   "version": "1.0.2",
   "description": "3top custom fetch library",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "author": "3TOP 커머스플랫폼 1본부",
   "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaeryeol2/top-fetch.git"
+  },
+  "homepage": "https://github.com/jaeryeol2/top-fetch#readme",
+  "bugs": {
+    "url": "https://github.com/jaeryeol2/top-fetch/issues"
+  },
   "publishConfig": {
-    "registry": "YOUR_NEXUS_REGISTRY_URL"
+    "access": "public"
   },
   "type": "module",
   "main": "./dist/top-fetch.cjs",
@@ -14,7 +22,8 @@
   "types": "./dist/@types/top-fetch.d.mts",
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "exports": {
     ".": {
