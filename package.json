@@ -1,0 +1,48 @@
+{
+  "name": "top-fetch",
+  "version": "1.0.2",
+  "description": "3top custom fetch library",
+  "license": "UNLICENSED",
+  "author": "3TOP 커머스플랫폼 1본부",
+  "private": false,
+  "publishConfig": {
+    "registry": "YOUR_NEXUS_REGISTRY_URL"
+  },
+  "type": "module",
+  "main": "./dist/top-fetch.cjs",
+  "module": "./dist/top-fetch.mjs",
+  "types": "./dist/@types/top-fetch.d.mts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/@types/top-fetch.d.mts",
+      "import": "./dist/top-fetch.mjs",
+      "require": "./dist/top-fetch.cjs",
+      "script": "./dist/top-fetch.min.js"
+    }
+  },
+  "scripts": {
+    "build": "tsdown && node -e \"fs.renameSync('dist/top-fetch.min.iife.js', 'dist/top-fetch.min.js')\"",
+    "prepare": "npm run build",
+    "pretest": "npm run build",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src tests"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.0.0",
+    "eslint": "^10.5.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.6",
+    "globals": "^17.7.0",
+    "happy-dom": "^20.11.1",
+    "tsdown": "^0.22.14",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.61.1",
+    "vitest": "^4.1.10"
+  }
+}

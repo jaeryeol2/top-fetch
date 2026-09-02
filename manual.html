@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>top-fetch 사용자 매뉴얼 &amp; 기술 가이드</title>
+</head>
+<body style="margin: 0; padding: 24px; background-color: #ffffff; color: #24292f; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Malgun Gothic', sans-serif; font-size: 15px; line-height: 1.75; word-break: keep-all; box-sizing: border-box;">
+
+<div style="max-width: 1100px; margin: 0 auto; box-sizing: border-box;">
+
+  <!-- Header / Hero Section -->
+  <div style="border-bottom: 2px solid #eaecef; padding-bottom: 20px; margin-bottom: 30px;">
+    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
+      <span style="font-family: Consolas, monospace; font-size: 12px; font-weight: 700; background-color: #ddf4ff; color: #0969da; border: 1px solid #54aeff; padding: 2px 8px; border-radius: 12px;">v1.0.2</span>
+      <span style="font-family: Consolas, monospace; font-size: 12px; font-weight: 600; background-color: #f6f8fa; color: #57606a; border: 1px solid #d0d7de; padding: 2px 8px; border-radius: 12px;">Zero-Dependency</span>
+      <span style="font-family: Consolas, monospace; font-size: 12px; font-weight: 600; background-color: #f6f8fa; color: #57606a; border: 1px solid #d0d7de; padding: 2px 8px; border-radius: 12px;">TypeScript Strict</span>
+      <span style="font-family: Consolas, monospace; font-size: 12px; font-weight: 600; background-color: #dafbe1; color: #1a7f37; border: 1px solid #4ac26b; padding: 2px 8px; border-radius: 12px;">ESM / CJS / IIFE</span>
+    </div>
+    <h1 style="margin: 8px 0 12px 0; font-size: 28px; font-weight: 700; color: #1f2328; line-height: 1.3;">top-fetch 🚀</h1>
+    <blockquote style="margin: 0 0 16px 0; padding: 12px 16px; background-color: #f6f8fa; border-left: 4px solid #0969da; color: #57606a; font-size: 14.5px; border-radius: 0 6px 6px 0;">
+      <strong style="color: #24292f;">Native Web Fetch API Wrapper Library</strong><br>
+      <code style="background-color: #eaeef2; color: #0969da; padding: 2px 6px; border-radius: 4px; font-family: Consolas, monospace; font-size: 13px;">top-fetch</code>는 Web 표준 <code>fetch</code> API를 기반으로 제작된 경량(Zero-Dependency) 타입안전 HTTP 클라이언트 래퍼 라이브러리입니다.<br>
+      브라우저(React, Vue 등 CSR), SSR(Next.js, Nuxt 등), Node.js 백엔드 환경 모두에서 유연하게 동작하도록 설계되었습니다.
+    </blockquote>
+    <ul style="margin: 0; padding-left: 20px; color: #57606a; font-size: 13.5px;">
+      <li><strong style="color: #24292f;">Author:</strong> 3TOP 커머스플랫폼 1본부</li>
+      <li><strong style="color: #24292f;">License:</strong> UNLICENSED (Private Project)</li>
+    </ul>
+  </div>
+
+  <!-- 1. 주요 특징 -->
+  <div style="margin-bottom: 40px;">
+    <h2 style="font-size: 21px; font-weight: 700; color: #1f2328; border-bottom: 1px solid #d0d7de; padding-bottom: 8px; margin-top: 0; margin-bottom: 16px;">📌 주요 특징 (Key Features)</h2>
+    <ul style="margin: 0; padding-left: 24px; line-height: 1.8;">
+      <li style="margin-bottom: 8px;">⚡ <strong>Zero Dependencies &amp; Native Fetch 기반</strong>: 별도의 외부 종속성 없이 브라우저 및 Node.js 네이티브 <code>fetch</code> API를 활용합니다.</li>
+      <li style="margin-bottom: 8px;">📦 <strong>DUAL ESM &amp; CommonJS 지원</strong>: <code>tsdown</code>으로 빌드되어 <code>.mjs</code> 및 <code>.cjs</code> 번들을 모두 제공합니다.</li>
+      <li style="margin-bottom: 8px;">🛠 <strong>인스턴스 생성 (<code style="background-color: #f0f3f6; color: #0969da; padding: 2px 5px; border-radius: 4px; font-family: Consolas, monospace;">topFetch.create</code>)</strong>: <code>baseURL</code>, 기본 헤더, 인터셉터, 타임아웃 설정을 캡슐화한 커스텀 클라이언트를 생성할 수 있습니다.</li>
+      <li style="margin-bottom: 8px;">🔍 <strong>중첩 쿼리 파라미터 직렬화 (<code style="background-color: #f0f3f6; color: #0969da; padding: 2px 5px; border-radius: 4px; font-family: Consolas, monospace;">query</code>)</strong>: 배열(<code>tags[0]=ts</code>), 중첩 객체, Date, Map, Set 등의 파라미터를 자동으로 인코딩 및 URL 쿼리 스트링으로 변환합니다. (순환 참조 감지 포함)</li>
+      <li style="margin-bottom: 8px;">📝 <strong>스마트 요청 바디 처리 (<code style="background-color: #f0f3f6; color: #0969da; padding: 2px 5px; border-radius: 4px; font-family: Consolas, monospace;">body</code>)</strong>: Plain Object 입력 시 <code>Content-Type: application/json</code> 헤더 추가 및 자동 <code>JSON.stringify</code>를 수행하며, <code>FormData</code>, <code>Blob</code>, <code>URLSearchParams</code>는 유지합니다.</li>
+      <li style="margin-bottom: 8px;">🪝 <strong>강력한 인터셉터 (<code style="background-color: #f0f3f6; color: #0969da; padding: 2px 5px; border-radius: 4px; font-family: Consolas, monospace;">beforeRequest</code>, <code style="background-color: #f0f3f6; color: #0969da; padding: 2px 5px; border-radius: 4px; font-family: Consolas, monospace;">afterResponse</code>, <code style="background-color: #f0f3f6; color: #0969da; padding: 2px 5px; border-radius: 4px; font-family: Consolas, monospace;">onError</code>)</strong>: 단일 함수 또는 배열 형태의 인터셉터를 체이닝하여 공통 헤더 주입, 토큰 갱신, 에러 로깅 등을 처리합니다.</li>
+      <li style="margin-bottom: 8px;">⏱ <strong>타임아웃 &amp; 자동 재시도 (<code style="background-color: #f0f3f6; color: #0969da; padding: 2px 5px; border-radius: 4px; font-family: Consolas, monospace;">timeout</code>, <code style="background-color: #f0f3f6; color: #0969da; padding: 2px 5px; border-radius: 4px; font-family: Consolas, monospace;">retry</code>, <code style="background-color: #f0f3f6; color: #0969da; padding: 2px 5px; border-radius: 4px; font-family: Consolas, monospace;">delay</code>)</strong>: <code>AbortController</code> 기반 타임아웃(기본 3,000ms) 및 일시적 오류(408, 429, 5xx 서버 오류 및 네트워크 단절) 발생 시 안전한 자동 재시도 기능을 제공합니다.</li>
+      <li style="margin-bottom: 8px;">📄 <strong>스마트 응답 파서 (<code style="background-color: #f0f3f6; color: #0969da; padding: 2px 5px; border-radius: 4px; font-family: Consolas, monospace;">getData</code> &amp; <code style="background-color: #f0f3f6; color: #0969da; padding: 2px 5px; border-radius: 4px; font-family: Consolas, monospace;">.getData()</code>)</strong>: <code>await topFetch(...).getData()</code> 직접 체이닝, <code>response.getData()</code>, <code>getData(response)</code> 헬퍼 함수 모두 지원하며, <code>Content-Type</code> 및 응답 상태에 따라 JSON, Blob(이미지, PDF, 바이너리), FormData, Plain Text 등을 자동 판별하여 파싱합니다.</li>
+    </ul>
+  </div>
+
+  <!-- 2. 설치 및 빌드 -->
+  <div style="margin-bottom: 40px;">
+    <h2 style="font-size: 21px; font-weight: 700; color: #1f2328; border-bottom: 1px solid #d0d7de; padding-bottom: 8px; margin-top: 0; margin-bottom: 16px;">📥 설치 및 빌드 (Installation &amp; Build)</h2>
+    
+    <h3 style="font-size: 16.5px; font-weight: 600; color: #1f2328; margin: 16px 0 8px 0;">빌드 명령</h3>
+    <div style="border: 1px solid #30363d; border-radius: 8px; overflow: hidden; margin: 10px 0 16px 0; background-color: #0d1117;">
+      <div style="background-color: #161b22; border-bottom: 1px solid #30363d; padding: 8px 14px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #ff5f56; display: inline-block;"></span>
+          <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #ffbd2e; display: inline-block;"></span>
+          <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #27c93f; display: inline-block;"></span>
+        </div>
+        <span style="font-family: Consolas, monospace; font-size: 11px; color: #8b949e; font-weight: 600;">bash</span>
+      </div>
+      <pre style="margin: 0; padding: 14px 16px; background-color: #0d1117; color: #e6edf3; font-family: Consolas, Monaco, monospace; font-size: 13.5px; line-height: 1.6; overflow-x: auto;"><code><span style="color: #79c0ff;">npm</span> <span style="color: #a5d6ff;">run build</span></code></pre>
+    </div>
+
+    <h3 style="font-size: 16.5px; font-weight: 600; color: #1f2328; margin: 20px 0 8px 0;">📦 빌드 산출물 구조 (<code>dist/</code>) 및 파일별 상세 설명</h3>
+    <p style="margin: 0 0 12px 0; color: #57606a;"><code>npm run build</code> 실행 시 <code>tsdown</code> 및 후처리 스크립트에 의해 <code>dist/</code> 디렉토리에 런타임 환경별 번들 파일이 생성됩니다.</p>
+    
+    <div style="overflow-x: auto; margin: 12px 0 20px 0;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 13.5px; border: 1px solid #d0d7de; text-align: left;">
+        <thead>
+          <tr style="background-color: #f6f8fa;">
+            <th style="padding: 10px 14px; border: 1px solid #d0d7de; font-weight: 600; width: 22%;">산출물 파일</th>
+            <th style="padding: 10px 14px; border: 1px solid #d0d7de; font-weight: 600; width: 18%;">빌드 포맷</th>
+            <th style="padding: 10px 14px; border: 1px solid #d0d7de; font-weight: 600; width: 28%;">주요 대상 환경</th>
+            <th style="padding: 10px 14px; border: 1px solid #d0d7de; font-weight: 600; width: 32%;">상세 설명</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code style="color: #0969da; font-weight: 600;">dist/top-fetch.mjs</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><strong style="color: #0969da;">ESM</strong> (ES Module)</td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">React, Vue, Svelte, Next.js App Router, Vite, Nuxt 3</td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">ESNext 모듈 표준으로 <code>import { topFetch } from 'top-fetch'</code> 구문을 사용하는 최신 모듈 번들러 및 SSR 환경 전용 번들입니다. 트리쉐이킹(Tree-shaking)을 지원합니다.</td>
+          </tr>
+          <tr style="background-color: #fafbfc;">
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code style="color: #0969da; font-weight: 600;">dist/top-fetch.cjs</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><strong style="color: #0969da;">CommonJS</strong> (CJS)</td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">Node.js 백엔드 서버 (NestJS, Express, Fastify 등)</td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">Node.js의 <code>const { topFetch } = require('top-fetch')</code> 구문 환경에서 동작하는 레거시 및 백엔드 CommonJS 모듈 번들입니다.</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code style="color: #0969da; font-weight: 600;">dist/top-fetch.min.js</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><strong style="color: #0969da;">IIFE</strong> (Minified Global)</td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">JSP, 레거시 HTML, 스크립트 태그 (<code>&lt;script&gt;</code>) 로드 환경</td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">모듈 번들러가 없는 단일 HTML/JSP 환경에서 <code>&lt;script src="top-fetch.min.js"&gt;&lt;/script&gt;</code>로 직접 로드할 수 있는 경량화 번들입니다. 브라우저 전역 객체 <code>window.topFetch</code>에 자동 노출됩니다.</td>
+          </tr>
+          <tr style="background-color: #fafbfc;">
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code style="color: #0969da; font-weight: 600;">dist/@types/top-fetch.d.mts</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><strong style="color: #0969da;">DTS</strong> (TypeScript Declaration)</td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">TypeScript 개발 환경</td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">IDE(VS Code 등)에서 코드 자동 완성, 타입 검사 및 <code>TopFetchOptions</code>, <code>FetchInterceptors</code> 등의 타입 사양을 제공하는 선언 파일입니다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 3. 사용법 (Usage Examples) -->
+  <div style="margin-bottom: 40px;">
+    <h2 style="font-size: 21px; font-weight: 700; color: #1f2328; border-bottom: 1px solid #d0d7de; padding-bottom: 8px; margin-top: 0; margin-bottom: 16px;">💡 사용법 (Usage Examples)</h2>
+
+    <!-- 1. 기본 요청 -->
+    <div style="margin-bottom: 28px;">
+      <h3 style="font-size: 17px; font-weight: 600; color: #1f2328; margin: 16px 0 10px 0;">1. 기본 요청 (Basic Request)</h3>
+      
+      <div style="border: 1px solid #30363d; border-radius: 8px; overflow: hidden; margin: 10px 0 16px 0; background-color: #0d1117;">
+        <div style="background-color: #161b22; border-bottom: 1px solid #30363d; padding: 8px 14px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #ff5f56; display: inline-block;"></span>
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #ffbd2e; display: inline-block;"></span>
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #27c93f; display: inline-block;"></span>
+          </div>
+          <span style="font-family: Consolas, monospace; font-size: 11px; color: #8b949e; font-weight: 600;">typescript</span>
+        </div>
+        <pre style="margin: 0; padding: 14px 16px; background-color: #0d1117; color: #e6edf3; font-family: Consolas, Monaco, monospace; font-size: 13.5px; line-height: 1.65; overflow-x: auto;"><code><span style="color: #ff7b72;">import</span> { <span style="color: #79c0ff;">topFetch</span>, <span style="color: #79c0ff;">getData</span> } <span style="color: #ff7b72;">from</span> <span style="color: #a5d6ff;">'top-fetch'</span>;
+
+<span style="color: #8b949e; font-style: italic;">// 방법 1) Promise 메서드 직접 체이닝 (가장 추천하는 간결한 방법 🌟)</span>
+<span style="color: #ff7b72;">const</span> users = <span style="color: #ff7b72;">await</span> <span style="color: #d2a8ff;">topFetch</span>(<span style="color: #a5d6ff;">'https://api.example.com/users'</span>, {
+  query: { page: <span style="color: #79c0ff;">1</span>, limit: <span style="color: #79c0ff;">10</span> },
+}).<span style="color: #d2a8ff;">getData</span>();
+
+<span style="color: #8b949e; font-style: italic;">// 방법 2) Response 인스턴스를 받아 .getData() 메서드 직접 호출</span>
+<span style="color: #ff7b72;">const</span> response = <span style="color: #ff7b72;">await</span> <span style="color: #d2a8ff;">topFetch</span>(<span style="color: #a5d6ff;">'https://api.example.com/users'</span>);
+<span style="color: #ff7b72;">const</span> usersAlt1 = <span style="color: #ff7b72;">await</span> response.<span style="color: #d2a8ff;">getData</span>();
+
+<span style="color: #8b949e; font-style: italic;">// 방법 3) 기존 글로벌 getData(response) 헬퍼 함수 사용</span>
+<span style="color: #ff7b72;">const</span> usersAlt2 = <span style="color: #ff7b72;">await</span> <span style="color: #d2a8ff;">getData</span>(response);
+
+<span style="color: #8b949e; font-style: italic;">// POST 요청 (객체 바디 전달 시 Content-Type 자동 설정 및 .getData() 체이닝)</span>
+<span style="color: #ff7b72;">const</span> createdUser = <span style="color: #ff7b72;">await</span> <span style="color: #d2a8ff;">topFetch</span>(<span style="color: #a5d6ff;">'https://api.example.com/users'</span>, {
+  method: <span style="color: #a5d6ff;">'post'</span>,
+  body: { name: <span style="color: #a5d6ff;">'Hong Gil-dong'</span>, email: <span style="color: #a5d6ff;">'hong@example.com'</span> },
+}).<span style="color: #d2a8ff;">getData</span>();</code></pre>
+      </div>
+
+      <h4 style="font-size: 15px; font-weight: 600; color: #1f2328; margin: 18px 0 8px 0;">🌐 JSP / HTML 환경 (Script Tag 사용)</h4>
+      <div style="border: 1px solid #30363d; border-radius: 8px; overflow: hidden; margin: 10px 0 16px 0; background-color: #0d1117;">
+        <div style="background-color: #161b22; border-bottom: 1px solid #30363d; padding: 8px 14px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #ff5f56; display: inline-block;"></span>
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #ffbd2e; display: inline-block;"></span>
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #27c93f; display: inline-block;"></span>
+          </div>
+          <span style="font-family: Consolas, monospace; font-size: 11px; color: #8b949e; font-weight: 600;">html</span>
+        </div>
+        <pre style="margin: 0; padding: 14px 16px; background-color: #0d1117; color: #e6edf3; font-family: Consolas, Monaco, monospace; font-size: 13.5px; line-height: 1.65; overflow-x: auto;"><code><span style="color: #8b949e; font-style: italic;">&lt;!-- dist/top-fetch.min.js 파일을 script 태그로 로드 --&gt;</span>
+<span style="color: #7ee787;">&lt;script</span> <span style="color: #79c0ff;">src</span>=<span style="color: #a5d6ff;">"/js/dist/top-fetch.min.js"</span><span style="color: #7ee787;">&gt;&lt;/script&gt;</span>
+<span style="color: #7ee787;">&lt;script&gt;</span>
+  <span style="color: #8b949e; font-style: italic;">// window.topFetch 전역 객체 사용</span>
+  <span style="color: #ff7b72;">const</span> { topFetch, getData } = window.topFetch;
+
+  <span style="color: #ff7b72;">async function</span> <span style="color: #d2a8ff;">fetchUsers</span>() {
+    <span style="color: #8b949e; font-style: italic;">// topFetch 직접 체이닝 파싱 (.getData())</span>
+    <span style="color: #ff7b72;">const</span> users = <span style="color: #ff7b72;">await</span> <span style="color: #d2a8ff;">topFetch</span>(<span style="color: #a5d6ff;">'/api/users'</span>, { query: { page: <span style="color: #79c0ff;">1</span> } }).<span style="color: #d2a8ff;">getData</span>();
+    console.<span style="color: #d2a8ff;">log</span>(users);
+  }
+<span style="color: #7ee787;">&lt;/script&gt;</span></code></pre>
+      </div>
+    </div>
+
+    <!-- 2. 커스텀 인스턴스 생성 -->
+    <div style="margin-bottom: 28px;">
+      <h3 style="font-size: 17px; font-weight: 600; color: #1f2328; margin: 20px 0 10px 0;">2. 커스텀 인스턴스 생성 (<code>topFetch.create</code>)</h3>
+      <p style="margin: 0 0 10px 0; color: #57606a;"><code>topFetch.create(defaults)</code>를 사용하면 공통 <code>baseURL</code>, 기본 헤더, 타임아웃, 인터셉터 등이 미리 주입된 독립적인 API 클라이언트 인스턴스를 생성할 수 있습니다.</p>
+
+      <h4 style="font-size: 15px; font-weight: 600; color: #1f2328; margin: 14px 0 8px 0;">⚙️ 인스턴스 기본 사용법</h4>
+      <div style="border: 1px solid #30363d; border-radius: 8px; overflow: hidden; margin: 10px 0 16px 0; background-color: #0d1117;">
+        <div style="background-color: #161b22; border-bottom: 1px solid #30363d; padding: 8px 14px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #ff5f56; display: inline-block;"></span>
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #ffbd2e; display: inline-block;"></span>
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #27c93f; display: inline-block;"></span>
+          </div>
+          <span style="font-family: Consolas, monospace; font-size: 11px; color: #8b949e; font-weight: 600;">typescript</span>
+        </div>
+        <pre style="margin: 0; padding: 14px 16px; background-color: #0d1117; color: #e6edf3; font-family: Consolas, Monaco, monospace; font-size: 13.5px; line-height: 1.65; overflow-x: auto;"><code><span style="color: #ff7b72;">import</span> { <span style="color: #79c0ff;">topFetch</span>, <span style="color: #79c0ff;">getData</span> } <span style="color: #ff7b72;">from</span> <span style="color: #a5d6ff;">'top-fetch'</span>;
+
+<span style="color: #8b949e; font-style: italic;">// 1. 공통 옵션이 설정된 커스텀 인스턴스 생성</span>
+<span style="color: #ff7b72;">const</span> apiClient = topFetch.<span style="color: #d2a8ff;">create</span>({
+  baseURL: <span style="color: #a5d6ff;">'https://api.example.com'</span>,
+  timeout: <span style="color: #79c0ff;">5000</span>,
+  retry: <span style="color: #79c0ff;">2</span>,
+  delay: <span style="color: #79c0ff;">100</span>,
+  headers: {
+    <span style="color: #a5d6ff;">'X-Client-Version'</span>: <span style="color: #a5d6ff;">'1.0.0'</span>,
+  },
+  beforeRequest: (options) =&gt; {
+    <span style="color: #ff7b72;">const</span> headers = options.headers <span style="color: #ff7b72;">as</span> Headers;
+    headers.<span style="color: #d2a8ff;">set</span>(<span style="color: #a5d6ff;">'Authorization'</span>, <span style="color: #a5d6ff;">'Bearer my-access-token'</span>);
+  },
+  onError: (error) =&gt; {
+    console.<span style="color: #d2a8ff;">error</span>(<span style="color: #a5d6ff;">'[API Error Logged]:'</span>, error);
+  },
+});
+
+<span style="color: #8b949e; font-style: italic;">// 2. 생성된 인스턴스로 API 호출 (기본 설정 자동 적용)</span>
+<span style="color: #ff7b72;">const</span> response = <span style="color: #ff7b72;">await</span> <span style="color: #d2a8ff;">apiClient</span>(<span style="color: #a5d6ff;">'/v1/products'</span>, {
+  query: { category: <span style="color: #a5d6ff;">'electronics'</span> },
+});
+<span style="color: #ff7b72;">const</span> products = <span style="color: #ff7b72;">await</span> <span style="color: #d2a8ff;">getData</span>(response);</code></pre>
+      </div>
+
+      <h4 style="font-size: 15px; font-weight: 600; color: #1f2328; margin: 16px 0 8px 0;">🔄 인스턴스 옵션 병합 및 인터셉터 체이닝 원리</h4>
+      <ul style="margin: 0 0 14px 0; padding-left: 20px; line-height: 1.75;">
+        <li><strong>Headers 병합 (<code>mergeHeaders</code>)</strong>: <code>defaults.headers</code>와 호출 시 전달된 <code>options.headers</code>는 네이티브 <code>Headers</code> 객체 속성을 유지하며 안전하게 <code>set()</code> 처리됩니다.</li>
+        <li><strong>Interceptors 체이닝 (<code>composeInterceptors</code>)</strong>: <code>beforeRequest</code>, <code>afterResponse</code>, <code>onError</code> 인터셉터는 기본 설정에 정의된 인터셉터 뒤에 개별 호출 시 넘긴 인터셉터가 순차적으로 결합되어 순서대로 실행됩니다.</li>
+        <li><strong>옵션 덮어쓰기</strong>: <code>timeout</code>, <code>retry</code>, <code>delay</code> 등 일반 값은 호출 시 전달된 개별 옵션이 기본값을 덮어씁니다.</li>
+      </ul>
+
+      <h4 style="font-size: 15px; font-weight: 600; color: #1f2328; margin: 16px 0 8px 0;">🏢 멀티 테넌트 / 마이크로서비스별 인스턴스 분리</h4>
+      <div style="border: 1px solid #30363d; border-radius: 8px; overflow: hidden; margin: 10px 0 16px 0; background-color: #0d1117;">
+        <div style="background-color: #161b22; border-bottom: 1px solid #30363d; padding: 8px 14px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #ff5f56; display: inline-block;"></span>
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #ffbd2e; display: inline-block;"></span>
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #27c93f; display: inline-block;"></span>
+          </div>
+          <span style="font-family: Consolas, monospace; font-size: 11px; color: #8b949e; font-weight: 600;">typescript</span>
+        </div>
+        <pre style="margin: 0; padding: 14px 16px; background-color: #0d1117; color: #e6edf3; font-family: Consolas, Monaco, monospace; font-size: 13.5px; line-height: 1.65; overflow-x: auto;"><code><span style="color: #8b949e; font-style: italic;">// 회원 서비스용 클라이언트</span>
+<span style="color: #ff7b72;">const</span> userApi = topFetch.<span style="color: #d2a8ff;">create</span>({
+  baseURL: <span style="color: #a5d6ff;">'https://user-service.internal'</span>,
+  timeout: <span style="color: #79c0ff;">3000</span>,
+});
+
+<span style="color: #8b949e; font-style: italic;">// 결제 서비스용 클라이언트</span>
+<span style="color: #ff7b72;">const</span> paymentApi = topFetch.<span style="color: #d2a8ff;">create</span>({
+  baseURL: <span style="color: #a5d6ff;">'https://payment-service.internal'</span>,
+  timeout: <span style="color: #79c0ff;">10000</span>,
+  retry: <span style="color: #79c0ff;">3</span>,
+});
+
+<span style="color: #ff7b72;">const</span> userInfo = <span style="color: #ff7b72;">await</span> <span style="color: #d2a8ff;">userApi</span>(<span style="color: #a5d6ff;">'/profile'</span>);
+<span style="color: #ff7b72;">const</span> paymentResult = <span style="color: #ff7b72;">await</span> <span style="color: #d2a8ff;">paymentApi</span>(<span style="color: #a5d6ff;">'/charge'</span>, { method: <span style="color: #a5d6ff;">'post'</span>, body: { amount: <span style="color: #79c0ff;">50000</span> } });</code></pre>
+      </div>
+    </div>
+
+    <!-- 3. 중첩 쿼리 파라미터 직렬화 -->
+    <div style="margin-bottom: 28px;">
+      <h3 style="font-size: 17px; font-weight: 600; color: #1f2328; margin: 20px 0 10px 0;">3. 중첩 쿼리 파라미터 직렬화</h3>
+      <div style="border: 1px solid #30363d; border-radius: 8px; overflow: hidden; margin: 10px 0 16px 0; background-color: #0d1117;">
+        <div style="background-color: #161b22; border-bottom: 1px solid #30363d; padding: 8px 14px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #ff5f56; display: inline-block;"></span>
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #ffbd2e; display: inline-block;"></span>
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #27c93f; display: inline-block;"></span>
+          </div>
+          <span style="font-family: Consolas, monospace; font-size: 11px; color: #8b949e; font-weight: 600;">typescript</span>
+        </div>
+        <pre style="margin: 0; padding: 14px 16px; background-color: #0d1117; color: #e6edf3; font-family: Consolas, Monaco, monospace; font-size: 13.5px; line-height: 1.65; overflow-x: auto;"><code><span style="color: #ff7b72;">await</span> <span style="color: #d2a8ff;">topFetch</span>(<span style="color: #a5d6ff;">'https://api.example.com/search'</span>, {
+  query: {
+    filter: {
+      status: <span style="color: #a5d6ff;">'active'</span>,
+      tags: [<span style="color: #a5d6ff;">'typescript'</span>, <span style="color: #a5d6ff;">'javascript'</span>],
+    },
+    page: <span style="color: #79c0ff;">2</span>,
+  },
+});
+
+<span style="color: #8b949e; font-style: italic;">// 변환된 URL:</span>
+<span style="color: #8b949e; font-style: italic;">// https://api.example.com/search?filter.status=active&amp;filter.tags%5B0%5D=typescript&amp;filter.tags%5B1%5D=javascript&amp;page=2</span></code></pre>
+      </div>
+    </div>
+
+    <!-- 4. 타임아웃 및 재시도 전략 -->
+    <div style="margin-bottom: 28px;">
+      <h3 style="font-size: 17px; font-weight: 600; color: #1f2328; margin: 20px 0 10px 0;">4. 타임아웃 및 재시도 전략 (Timeout &amp; Strategy Pattern Retry)</h3>
+      <p style="margin: 0 0 10px 0; color: #57606a;"><code>top-fetch</code>는 단순 카운터 방식 외에도 <strong>Strategy Pattern(재시도 전략 패턴)</strong>을 탑재하여 지수 백오프(Exponential Backoff), 커스텀 조건부 재시도 정책을 유연하게 주입할 수 있습니다.</p>
+
+      <div style="border: 1px solid #30363d; border-radius: 8px; overflow: hidden; margin: 10px 0 16px 0; background-color: #0d1117;">
+        <div style="background-color: #161b22; border-bottom: 1px solid #30363d; padding: 8px 14px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #ff5f56; display: inline-block;"></span>
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #ffbd2e; display: inline-block;"></span>
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #27c93f; display: inline-block;"></span>
+          </div>
+          <span style="font-family: Consolas, monospace; font-size: 11px; color: #8b949e; font-weight: 600;">typescript</span>
+        </div>
+        <pre style="margin: 0; padding: 14px 16px; background-color: #0d1117; color: #e6edf3; font-family: Consolas, Monaco, monospace; font-size: 13.5px; line-height: 1.65; overflow-x: auto;"><code><span style="color: #ff7b72;">import</span> { <span style="color: #79c0ff;">topFetch</span>, <span style="color: #79c0ff;">exponentialBackoffRetry</span> } <span style="color: #ff7b72;">from</span> <span style="color: #a5d6ff;">'top-fetch'</span>;
+
+<span style="color: #8b949e; font-style: italic;">// 1. 기본 재시도 옵션 사용 (하위 호환성 보장)</span>
+<span style="color: #ff7b72;">const</span> response1 = <span style="color: #ff7b72;">await</span> <span style="color: #d2a8ff;">topFetch</span>(<span style="color: #a5d6ff;">'https://api.example.com/flaky'</span>, {
+  timeout: <span style="color: #79c0ff;">2000</span>, <span style="color: #8b949e; font-style: italic;">// 시도당(per-attempt) 2초 타임아웃</span>
+  retry: <span style="color: #79c0ff;">3</span>,      <span style="color: #8b949e; font-style: italic;">// 서버 오류(5xx, 408, 429) 또는 네트워크 에러 시 최대 3회 재시도</span>
+  delay: <span style="color: #79c0ff;">500</span>,    <span style="color: #8b949e; font-style: italic;">// 재시도 대기 간격 500ms</span>
+});
+
+<span style="color: #8b949e; font-style: italic;">// 2. Strategy Pattern - 내장 지수 백오프(Exponential Backoff) 전략 사용 🌟</span>
+<span style="color: #ff7b72;">const</span> response2 = <span style="color: #ff7b72;">await</span> <span style="color: #d2a8ff;">topFetch</span>(<span style="color: #a5d6ff;">'https://api.example.com/unstable'</span>, {
+  retryStrategy: <span style="color: #d2a8ff;">exponentialBackoffRetry</span>({
+    maxRetries: <span style="color: #79c0ff;">3</span>,
+    initialDelay: <span style="color: #79c0ff;">100</span>, <span style="color: #8b949e; font-style: italic;">// 100ms, 200ms, 400ms 지수 백오프</span>
+    factor: <span style="color: #79c0ff;">2</span>,
+    statusCodes: [<span style="color: #79c0ff;">500</span>, <span style="color: #79c0ff;">502</span>, <span style="color: #79c0ff;">503</span>, <span style="color: #79c0ff;">504</span>], <span style="color: #8b949e; font-style: italic;">// 해당 서버 오류 코드에서만 선택적 재시도</span>
+  }),
+});
+
+<span style="color: #8b949e; font-style: italic;">// 3. Strategy Pattern - 사용자 정의 커스텀 전략 객체 주입</span>
+<span style="color: #ff7b72;">const</span> response3 = <span style="color: #ff7b72;">await</span> <span style="color: #d2a8ff;">topFetch</span>(<span style="color: #a5d6ff;">'https://api.example.com/custom'</span>, {
+  retryStrategy: {
+    shouldRetry: (context) =&gt; {
+      <span style="color: #8b949e; font-style: italic;">// 401 Unauthorized 에러 발생 시 재시도 안함</span>
+      <span style="color: #ff7b72;">if</span> (context.response?.status === <span style="color: #79c0ff;">401</span>) <span style="color: #ff7b72;">return false</span>;
+      <span style="color: #ff7b72;">return</span> context.attempt &lt;= <span style="color: #79c0ff;">3</span>;
+    },
+    getDelay: (context) =&gt; context.attempt * <span style="color: #79c0ff;">200</span>,
+  },
+});</code></pre>
+      </div>
+
+      <h4 style="font-size: 15px; font-weight: 600; color: #1f2328; margin: 16px 0 8px 0;">💡 재시도 및 타임아웃 동작 방식 (Retry &amp; Timeout Details)</h4>
+      <ul style="margin: 0 0 14px 0; padding-left: 20px; line-height: 1.75;">
+        <li style="margin-bottom: 6px;"><strong><code>timeout</code>은 각 시도당(Per-Attempt) 적용됩니다.</strong> 전체 요청 예산(Total Budget)이 아니므로, <code>timeout: 3000, retry: 3</code> 설정 시 각 시도마다 3초의 타임아웃이 개별 적용되어 최악의 경우 (4회 시도 * 3초) + 재시도 지연 시간만큼 소요될 수 있습니다.</li>
+        <li style="margin-bottom: 6px;"><strong><code>beforeRequest</code>는 매 재시도 시에도 실행됩니다.</strong> 재시도 시에도 인터셉터가 다시 실행되므로, 토큰 갱신이나 헤더 주입이 재시도 요청에서도 온전히 유지됩니다.</li>
+        <li style="margin-bottom: 6px;"><strong>기본 재시도 필터링:</strong> 기본 <code>retry: N</code> 옵션은 <code>400</code>, <code>401</code>, <code>404</code> 등 일반 4xx 클라이언트 에러를 재시도하지 않으며, 일시적 복구 가능성이 있는 <strong><code>408</code>, <code>429</code>, <code>5xx</code> 서버 에러 및 네트워크 단절 에러</strong>만 재시도합니다.</li>
+        <li style="margin-bottom: 6px;"><strong>사용자 요청 취소(<code>signal.abort()</code>) 시 즉시 중단:</strong> 사용자가 전달한 <code>AbortSignal</code>이 취소(<code>aborted: true</code>)되면 남아있는 재시도 카운트와 무관하게 모든 재시도가 즉시 중단되고 <code>AbortError</code>를 발생시켜 불필요한 중복 트래픽을 방지합니다.</li>
+        <li style="margin-bottom: 6px;"><strong>요청 바디가 <code>ReadableStream</code>인 경우 재시도가 자동으로 차단됩니다.</strong> 스트림은 한 번 소비되면 다시 읽을 수 없어(1회성 소비), 동일한 스트림으로 재시도를 시도하면 두 번째 요청이 반드시 실패합니다. <code>top-fetch</code>는 이런 상황에서 <code>retry</code>/<code>retryStrategy</code> 설정과 무관하게 재시도를 건너뛰고 최초 응답/에러를 그대로 반환하며, 콘솔에 <code>console.warn</code>으로 원인을 안내합니다. 스트리밍 업로드에서 재시도가 필요하다면 <code>Blob</code>, <code>ArrayBuffer</code>, <code>string</code>, <code>FormData</code>처럼 재사용 가능한 바디 타입을 사용해 주세요.</li>
+        <li style="margin-bottom: 6px;"><strong>안전 하드캡(Hard Cap):</strong> 재시도는 최대 10회로 제한되며, 10회 도달 시 무한 루프를 방지하기 위해 경고(<code>console.warn</code>)와 함께 재시도를 종료합니다.</li>
+      </ul>
+    </div>
+
+    <!-- 5. 응답 파싱 및 지원 포맷 -->
+    <div style="margin-bottom: 28px;">
+      <h3 style="font-size: 17px; font-weight: 600; color: #1f2328; margin: 20px 0 10px 0;">5. 응답 파싱 및 지원 포맷 (<code>getData</code>, <code>HttpError</code>, <code>returnError</code>)</h3>
+      <p style="margin: 0 0 10px 0; color: #57606a;"><code>getData</code>는 <code>Content-Type</code> 헤더를 분석하여 적절한 데이터 타입으로 자동 파싱하며, 스트림 잠김(Locked Body Stream) 방지를 위해 <code>response.clone()</code> 기반으로 안전하게 처리됩니다.</p>
+
+      <div style="border: 1px solid #30363d; border-radius: 8px; overflow: hidden; margin: 10px 0 16px 0; background-color: #0d1117;">
+        <div style="background-color: #161b22; border-bottom: 1px solid #30363d; padding: 8px 14px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #ff5f56; display: inline-block;"></span>
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #ffbd2e; display: inline-block;"></span>
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #27c93f; display: inline-block;"></span>
+          </div>
+          <span style="font-family: Consolas, monospace; font-size: 11px; color: #8b949e; font-weight: 600;">typescript</span>
+        </div>
+        <pre style="margin: 0; padding: 14px 16px; background-color: #0d1117; color: #e6edf3; font-family: Consolas, Monaco, monospace; font-size: 13.5px; line-height: 1.65; overflow-x: auto;"><code><span style="color: #ff7b72;">import</span> { <span style="color: #79c0ff;">topFetch</span>, <span style="color: #79c0ff;">getData</span>, <span style="color: #79c0ff;">HttpError</span>, <span style="color: #79c0ff;">returnError</span> } <span style="color: #ff7b72;">from</span> <span style="color: #a5d6ff;">'top-fetch'</span>;
+
+<span style="color: #ff7b72;">try</span> {
+  <span style="color: #ff7b72;">const</span> response = <span style="color: #ff7b72;">await</span> <span style="color: #d2a8ff;">topFetch</span>(<span style="color: #a5d6ff;">'https://api.example.com/data'</span>);
+  <span style="color: #ff7b72;">const</span> data = <span style="color: #ff7b72;">await</span> <span style="color: #d2a8ff;">getData</span>(response);
+
+  <span style="color: #ff7b72;">if</span> (!response.ok) {
+    <span style="color: #ff7b72;">throw new</span> <span style="color: #d2a8ff;">HttpError</span>(<span style="color: #a5d6ff;">'Request failed'</span>, response.status);
+  }
+  console.<span style="color: #d2a8ff;">log</span>(<span style="color: #a5d6ff;">'Parsed Data:'</span>, data);
+} <span style="color: #ff7b72;">catch</span> (error) {
+  <span style="color: #ff7b72;">const</span> errorResponse = <span style="color: #d2a8ff;">returnError</span>(error);
+  <span style="color: #8b949e; font-style: italic;">// { status: 500 | status, message: '...', data: null }</span>
+}</code></pre>
+      </div>
+
+      <h4 style="font-size: 15px; font-weight: 600; color: #1f2328; margin: 16px 0 8px 0;">📦 <code>getData</code> 자동 지원 <code>Content-Type</code> 카테고리</h4>
+      <div style="overflow-x: auto; margin: 12px 0 16px 0;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 13.5px; border: 1px solid #d0d7de; text-align: left;">
+          <thead>
+            <tr style="background-color: #f6f8fa;">
+              <th style="padding: 10px 14px; border: 1px solid #d0d7de; font-weight: 600; width: 18%;">카테고리</th>
+              <th style="padding: 10px 14px; border: 1px solid #d0d7de; font-weight: 600; width: 38%;">매칭 <code>Content-Type</code> 패턴</th>
+              <th style="padding: 10px 14px; border: 1px solid #d0d7de; font-weight: 600; width: 20%;">반환 타입</th>
+              <th style="padding: 10px 14px; border: 1px solid #d0d7de; font-weight: 600; width: 24%;">상세 내용</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><strong>JSON</strong></td>
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>application/json</code>, <code>application/problem+json</code>, <code>application/ld+json</code>, <code>*.json</code></td>
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>T</code> (JSON Object/Array)</td>
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>await response.json()</code> 자동 파싱</td>
+            </tr>
+            <tr style="background-color: #fafbfc;">
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><strong>바이너리 (Blob)</strong></td>
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>image/*</code>, <code>audio/*</code>, <code>video/*</code>, <code>font/*</code>, <code>application/octet-stream</code>, <code>pdf</code>, <code>zip</code>, <code>tar</code>, <code>gzip</code>, <code>7z</code>, <code>rar</code>, <code>epub</code>, <code>excel</code>, <code>word</code>, <code>officedocument</code>, <code>vnd.ms-</code></td>
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>Blob</code></td>
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;">파일 다운로드, 이미지/미디어 스트림</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><strong>FormData</strong></td>
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>multipart/*</code>, <code>application/x-www-form-urlencoded</code></td>
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>FormData</code></td>
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>await response.formData()</code> 자동 파싱</td>
+            </tr>
+            <tr style="background-color: #fafbfc;">
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><strong>텍스트 / 스크립트</strong></td>
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>text/*</code>, <code>application/xml</code>, <code>text/xml</code>, <code>application/javascript</code>, <code>text/javascript</code>, <code>application/typescript</code>, <code>application/yaml</code>, <code>application/graphql</code></td>
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>string</code></td>
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>await response.text()</code> 자동 파싱</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><strong>Empty Body</strong></td>
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;">상태코드 <code>204 No Content</code>, <code>205 Reset Content</code>, 헤더 <code>Content-Length: 0</code></td>
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>null</code></td>
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;">바디가 없는 응답에 대해 <code>null</code> 반환</td>
+            </tr>
+            <tr style="background-color: #fafbfc;">
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><strong>Fallback</strong></td>
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;">Content-Type 미지정 또는 알 수 없는 형식</td>
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>string | Blob | null</code></td>
+              <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>text()</code> 시도 후 실패 시 <code>blob()</code> 순차적 Fallback</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 6. 프로젝트 전역 커스텀 래퍼 구축 및 타입 커스텀 패턴 -->
+    <div style="margin-bottom: 28px;">
+      <h3 style="font-size: 17px; font-weight: 600; color: #1f2328; margin: 20px 0 10px 0;">6. 프로젝트 전역 커스텀 래퍼 구축 및 타입 커스텀 패턴 (<code>sampleFetch</code>)</h3>
+      <p style="margin: 0 0 10px 0; color: #57606a;">
+        실무 프로젝트마다 백엔드 API의 응답 구조(Response Envelope - 예: <code>{ status, message, data }</code> 또는 <code>{ code, result, isSuccess }</code>)가 다를 수 있습니다.<br>
+        <code>top-fetch</code>는 특정 프로젝트 스키마에 종속되지 않도록 설계되어 있으며, 프로젝트 환경에 맞춰 아래와 같이 전역 응답 타입(<code>ResponseApi&lt;T&gt;</code>) 및 커스텀 래퍼 클라이언트를 손쉽게 구성할 수 있습니다. (<code>examples/sample.ts</code> 참고)
+      </p>
+
+      <div style="border: 1px solid #30363d; border-radius: 8px; overflow: hidden; margin: 10px 0 16px 0; background-color: #0d1117;">
+        <div style="background-color: #161b22; border-bottom: 1px solid #30363d; padding: 8px 14px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #ff5f56; display: inline-block;"></span>
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #ffbd2e; display: inline-block;"></span>
+            <span style="width: 10px; height: 10px; border-radius: 50%; background-color: #27c93f; display: inline-block;"></span>
+          </div>
+          <span style="font-family: Consolas, monospace; font-size: 11px; color: #8b949e; font-weight: 600;">typescript</span>
+        </div>
+        <pre style="margin: 0; padding: 14px 16px; background-color: #0d1117; color: #e6edf3; font-family: Consolas, Monaco, monospace; font-size: 13px; line-height: 1.65; overflow-x: auto;"><code><span style="color: #ff7b72;">import</span> { <span style="color: #79c0ff;">topFetch</span>, <span style="color: #79c0ff;">getData</span>, <span style="color: #79c0ff;">HttpError</span>, <span style="color: #79c0ff;">returnError</span>, <span style="color: #79c0ff;">mergeFetchOptions</span> } <span style="color: #ff7b72;">from</span> <span style="color: #a5d6ff;">'top-fetch'</span>;
+<span style="color: #ff7b72;">import type</span> { <span style="color: #79c0ff;">FetchInterceptors</span>, <span style="color: #79c0ff;">TopFetchOptions</span> } <span style="color: #ff7b72;">from</span> <span style="color: #a5d6ff;">'top-fetch'</span>;
+
+<span style="color: #8b949e; font-style: italic;">/**
+ * 실무 프로젝트 전역에서 사용하는 백엔드 공통 API 응답 규격 타입 정의 샘플입니다.
+ * 프로젝트 사양(예: { code: string, result: T, isSuccess: boolean })에 맞춰 자유롭게 커스텀할 수 있습니다.
+ */</span>
+<span style="color: #ff7b72;">export interface</span> <span style="color: #79c0ff;">ResponseApi</span>&lt;<span style="color: #ffa657;">T</span>&gt; {
+  status: <span style="color: #79c0ff;">number</span>;
+  message: <span style="color: #79c0ff;">string</span>;
+  data: <span style="color: #ffa657;">T</span> | <span style="color: #79c0ff;">null</span>;
+}
+
+<span style="color: #8b949e; font-style: italic;">/**
+ * 프로젝트 전역에서 공유되는 공통 인터셉터 레지스트리 객체입니다.
+ */</span>
+<span style="color: #ff7b72;">const</span> globalInterceptors: <span style="color: #79c0ff;">FetchInterceptors</span> = {
+  beforeRequest: [],
+  afterResponse: [],
+  onError: [],
+};
+
+<span style="color: #8b949e; font-style: italic;">/**
+ * topFetch.create()를 이용하여 공통 baseURL, timeout, 헤더가 캡슐화된 싱글톤 API 인스턴스 생성
+ */</span>
+<span style="color: #ff7b72;">const</span> baseFetch = topFetch.<span style="color: #d2a8ff;">create</span>({
+  baseURL: <span style="color: #a5d6ff;">'https://api.example.com'</span>,
+  timeout: <span style="color: #79c0ff;">5000</span>,
+});
+
+<span style="color: #8b949e; font-style: italic;">/**
+ * Raw Web Native Response 객체를 그대로 반환하는 메서드
+ */</span>
+<span style="color: #ff7b72;">const</span> native = (path: <span style="color: #79c0ff;">string</span>, options?: <span style="color: #79c0ff;">TopFetchOptions</span>): <span style="color: #79c0ff;">Promise</span>&lt;<span style="color: #79c0ff;">Response</span>&gt; =&gt; {
+  <span style="color: #ff7b72;">const</span> mergedOptions = <span style="color: #d2a8ff;">mergeFetchOptions</span>(globalInterceptors, options);
+  <span style="color: #ff7b72;">return</span> <span style="color: #d2a8ff;">baseFetch</span>(path, mergedOptions);
+};
+
+<span style="color: #8b949e; font-style: italic;">/**
+ * 백엔드 공통 응답 규격(ResponseApi&lt;R&gt;) 형태로 응답을 감싸서 반환하는 Wrap Fetch 메서드
+ */</span>
+<span style="color: #ff7b72;">const</span> wrap = <span style="color: #ff7b72;">async</span> &lt;<span style="color: #ffa657;">R</span> = <span style="color: #79c0ff;">unknown</span>&gt;(
+  path: <span style="color: #79c0ff;">string</span>,
+  options?: <span style="color: #79c0ff;">TopFetchOptions</span>,
+): <span style="color: #79c0ff;">Promise</span>&lt;<span style="color: #79c0ff;">ResponseApi</span>&lt;<span style="color: #ffa657;">R</span>&gt;&gt; =&gt; {
+  <span style="color: #ff7b72;">try</span> {
+    <span style="color: #8b949e; font-style: italic;">// 1. 전역 인터셉터와 요청별 개별 옵션 병합</span>
+    <span style="color: #ff7b72;">const</span> mergedOptions = <span style="color: #d2a8ff;">mergeFetchOptions</span>(globalInterceptors, options);
+
+    <span style="color: #8b949e; font-style: italic;">// 2. HTTP 통신 수행 및 헤더 기반 데이터 파싱 (JSON, Blob, FormData, Text 등)</span>
+    <span style="color: #ff7b72;">const</span> response = <span style="color: #ff7b72;">await</span> <span style="color: #d2a8ff;">baseFetch</span>(path, mergedOptions);
+    <span style="color: #ff7b72;">const</span> responseData = <span style="color: #ff7b72;">await</span> <span style="color: #d2a8ff;">getData</span>(response);
+
+    <span style="color: #8b949e; font-style: italic;">// 3. HTTP 응답 비정상(4xx, 5xx) 상태 감지 시 HttpError 예외 발생</span>
+    <span style="color: #ff7b72;">if</span> (!response.ok) {
+      <span style="color: #ff7b72;">let</span> backendMessage = <span style="color: #a5d6ff;">'do not get response data.'</span>;
+      <span style="color: #ff7b72;">if</span> (responseData &amp;&amp; <span style="color: #ff7b72;">typeof</span> responseData === <span style="color: #a5d6ff;">'object'</span> &amp;&amp; <span style="color: #a5d6ff;">'message'</span> <span style="color: #ff7b72;">in</span> responseData) {
+        backendMessage = <span style="color: #79c0ff;">String</span>((responseData <span style="color: #ff7b72;">as</span> <span style="color: #79c0ff;">Record</span>&lt;<span style="color: #79c0ff;">string</span>, <span style="color: #79c0ff;">unknown</span>&gt;).message);
+      } <span style="color: #ff7b72;">else if</span> (<span style="color: #ff7b72;">typeof</span> responseData === <span style="color: #a5d6ff;">'string'</span> &amp;&amp; responseData) {
+        backendMessage = responseData;
+      }
+      <span style="color: #ff7b72;">throw new</span> <span style="color: #d2a8ff;">HttpError</span>(backendMessage, response.status);
+    }
+
+    <span style="color: #8b949e; font-style: italic;">// 4-A. 파일 다운로드 / 바이너리 응답 (Blob) 인 경우</span>
+    <span style="color: #ff7b72;">if</span> (responseData <span style="color: #ff7b72;">instanceof</span> Blob) {
+      <span style="color: #ff7b72;">return</span> { status: response.status, message: <span style="color: #a5d6ff;">'success'</span>, data: responseData <span style="color: #ff7b72;">as unknown as</span> <span style="color: #ffa657;">R</span> };
+    }
+
+    <span style="color: #8b949e; font-style: italic;">// 4-B. 백엔드에서 이미 { data: ... } 형태로 감싸서 응답한 경우</span>
+    <span style="color: #ff7b72;">if</span> (responseData &amp;&amp; <span style="color: #ff7b72;">typeof</span> responseData === <span style="color: #a5d6ff;">'object'</span> &amp;&amp; <span style="color: #a5d6ff;">'data'</span> <span style="color: #ff7b72;">in</span> responseData) {
+      <span style="color: #ff7b72;">return</span> responseData <span style="color: #ff7b72;">as</span> <span style="color: #79c0ff;">ResponseApi</span>&lt;<span style="color: #ffa657;">R</span>&gt;;
+    }
+
+    <span style="color: #8b949e; font-style: italic;">// 4-C. 일반 JSON 객체 또는 단일 데이터인 경우 공통 규격으로 포맷팅</span>
+    <span style="color: #ff7b72;">return</span> { status: response.status, message: <span style="color: #a5d6ff;">'success'</span>, data: (responseData ?? <span style="color: #79c0ff;">null</span>) <span style="color: #ff7b72;">as</span> <span style="color: #ffa657;">R</span> };
+  } <span style="color: #ff7b72;">catch</span> (error) {
+    <span style="color: #8b949e; font-style: italic;">// 5. 예외 발생 시 표준 오류 구조체로 안전하게 변환하여 반환</span>
+    <span style="color: #ff7b72;">return</span> <span style="color: #d2a8ff;">returnError</span>&lt;<span style="color: #ffa657;">R</span>&gt;(error);
+  }
+};
+
+<span style="color: #8b949e; font-style: italic;">/**
+ * 프로젝트 메인 Fetch 클라이언트 엔트리포인트 객체
+ */</span>
+<span style="color: #ff7b72;">export const</span> sampleFetch = <span style="color: #79c0ff;">Object</span>.<span style="color: #d2a8ff;">assign</span>(wrap, { native });</code></pre>
+      </div>
+    </div>
+
+    <!-- 7. 내부 안전 가드 및 SSR 안정성 -->
+    <div style="margin-bottom: 28px;">
+      <h3 style="font-size: 17px; font-weight: 600; color: #1f2328; margin: 20px 0 10px 0;">7. 내부 안전 가드 및 SSR 안정성 (Safety &amp; Chaos Guards) 🛡️</h3>
+      <p style="margin: 0 0 12px 0; color: #57606a;"><code>top-fetch</code>는 예측 불가능한 네트워크 환경 및 복잡한 SSR/CSR 전환 환경에서도 시스템이 다운되거나 무한 루프에 빠지지 않도록 내장 안전 가드를 탑재하고 있습니다.</p>
+
+      <ol style="margin: 0 0 14px 0; padding-left: 24px; line-height: 1.8;">
+        <li style="margin-bottom: 8px;">
+          <strong>무한 재시도 핑퐁 차단 (Safety Hard-Cap 10회)</strong>:
+          잘못 구성된 커스텀 재시도 전략이나 플래키 네트워크로 인한 무한 루프 폭주를 원천 차단하기 위해 <strong>최대 10회 초과 시 재시도를 강제 종료</strong>합니다.
+        </li>
+        <li style="margin-bottom: 8px;">
+          <strong><code>beforeRequest</code> 비동기 타임아웃 즉시 차단</strong>:
+          비동기 인터셉터(토큰 갱신 등) 실행 도중 타임아웃(<code>options.timeout</code>)이 초과되면 <code>Promise.race</code>를 통해 <code>AbortSignal</code> 이벤트를 감지하여 즉시 요청을 중단하고 <code>AbortError</code>를 발생시킵니다.
+        </li>
+        <li style="margin-bottom: 8px;">
+          <strong><code>response.clone()</code> 스트림 잠김 방지</strong>:
+          <code>afterResponse</code> 인터셉터 로깅 및 <code>getData</code> 본문 파싱 시 원본 Response 스트림이 잠겨(Locked Body Stream) 재사용이 불가능해지는 문제를 방지하기 위해 내부적으로 <code>response.clone()</code>을 체계적으로 활용합니다.
+        </li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- 4. API Reference -->
+  <div style="margin-bottom: 40px;">
+    <h2 style="font-size: 21px; font-weight: 700; color: #1f2328; border-bottom: 1px solid #d0d7de; padding-bottom: 8px; margin-top: 0; margin-bottom: 16px;">📖 API Reference</h2>
+
+    <!-- topFetch & topFetch.create -->
+    <h3 style="font-size: 16.5px; font-weight: 600; color: #1f2328; margin: 16px 0 8px 0;"><code>topFetch(path, options)</code> &amp; <code>topFetch.create(defaults)</code></h3>
+    <div style="overflow-x: auto; margin: 10px 0 20px 0;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 13.5px; border: 1px solid #d0d7de; text-align: left;">
+        <thead>
+          <tr style="background-color: #f6f8fa;">
+            <th style="padding: 10px 14px; border: 1px solid #d0d7de; font-weight: 600; width: 25%;">함수 / 메서드</th>
+            <th style="padding: 10px 14px; border: 1px solid #d0d7de; font-weight: 600; width: 30%;">파라미터</th>
+            <th style="padding: 10px 14px; border: 1px solid #d0d7de; font-weight: 600; width: 20%;">반환 타입</th>
+            <th style="padding: 10px 14px; border: 1px solid #d0d7de; font-weight: 600; width: 25%;">설명</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><strong><code style="color: #0969da;">topFetch(path, options)</code></strong></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>path: string</code>, <code>options?: TopFetchOptions</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>TopFetchPromise</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">HTTP 요청을 수행하며, <code>await topFetch(...).getData()</code> 체이닝 및 <code>res.getData()</code>를 지원하는 확장 Promise를 반환합니다.</td>
+          </tr>
+          <tr style="background-color: #fafbfc;">
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><strong><code style="color: #0969da;">topFetch.create(defaults)</code></strong></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>defaults: Omit&lt;TopFetchOptions, 'method' | 'query' | 'body'&gt;</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>(path: string, options?: TopFetchOptions) =&gt; TopFetchPromise</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">공통 <code>baseURL</code>, 기본 헤더, 타임아웃, 인터셉터가 캡슐화된 커스텀 클라이언트 인스턴스 함수를 생성합니다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TopFetchOptions -->
+    <h3 style="font-size: 16.5px; font-weight: 600; color: #1f2328; margin: 20px 0 8px 0;"><code>TopFetchOptions</code> (Discriminated Union)</h3>
+    <p style="margin: 0 0 10px 0; color: #57606a;">
+      <code>TopFetchOptions</code>는 TypeScript의 <strong>Discriminated Union</strong>으로 구성되어 있어, <code>GET/DELETE</code> 및 <code>POST/PUT/PATCH</code> 메서드 모두에서 <code>query</code> 파라미터를 자유롭게 전달할 수 있으며, <code>body</code> 옵션은 <code>POST/PUT/PATCH</code> 메서드에서 안전하게 허용됩니다.
+    </p>
+    <div style="overflow-x: auto; margin: 10px 0 20px 0;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 13.5px; border: 1px solid #d0d7de; text-align: left;">
+        <thead>
+          <tr style="background-color: #f6f8fa;">
+            <th style="padding: 10px 14px; border: 1px solid #d0d7de; font-weight: 600; width: 18%;">옵션명</th>
+            <th style="padding: 10px 14px; border: 1px solid #d0d7de; font-weight: 600; width: 34%;">타입</th>
+            <th style="padding: 10px 14px; border: 1px solid #d0d7de; font-weight: 600; width: 12%; text-align: center;">기본값</th>
+            <th style="padding: 10px 14px; border: 1px solid #d0d7de; font-weight: 600; width: 36%;">설명</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code style="color: #0969da; font-weight: 600;">baseURL</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>string</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de; text-align: center;"><code>undefined</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">모든 상대 경로에 결합될 기본 URL</td>
+          </tr>
+          <tr style="background-color: #fafbfc;">
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code style="color: #0969da; font-weight: 600;">method</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>'get' | 'delete' | 'post' | 'put' | 'patch'</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de; text-align: center;"><code>'get'</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">HTTP 메서드</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code style="color: #0969da; font-weight: 600;">query</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>Record&lt;string, unknown&gt; | object</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de; text-align: center;"><code>undefined</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">모든 HTTP 요청 시 URL 쿼리 스트링으로 직렬화할 파라미터 객체 (중첩 객체/배열/Map/Set/Date 지원)</td>
+          </tr>
+          <tr style="background-color: #fafbfc;">
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code style="color: #0969da; font-weight: 600;">body</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>Record&lt;string, unknown&gt; | BodyInit</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de; text-align: center;"><code>undefined</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">POST / PUT / PATCH 요청 시 전송할 바디 (Object는 자동 JSON 직렬화)</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code style="color: #0969da; font-weight: 600;">headers</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>HeadersInit</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de; text-align: center;"><code>undefined</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">요청 헤더 (<code>mergeHeaders</code>를 통해 네이티브 Headers 속성 유지)</td>
+          </tr>
+          <tr style="background-color: #fafbfc;">
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code style="color: #0969da; font-weight: 600;">timeout</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>number</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de; text-align: center;"><code>3000</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">각 시도당(per-attempt) 요청 타임아웃 (ms)</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code style="color: #0969da; font-weight: 600;">retry</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>number</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de; text-align: center;"><code>0</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">일시적 오류(408, 429, 5xx 및 네트워크 에러) 시 단순 재시도 횟수</td>
+          </tr>
+          <tr style="background-color: #fafbfc;">
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code style="color: #0969da; font-weight: 600;">delay</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>number</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de; text-align: center;"><code>0</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">단순 재시도 대기 간격 (ms)</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code style="color: #0969da; font-weight: 600;">retryStrategy</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>RetryStrategy</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de; text-align: center;"><code>undefined</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">Strategy Pattern 기반 커스텀 재시도 전략 함수/객체</td>
+          </tr>
+          <tr style="background-color: #fafbfc;">
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code style="color: #0969da; font-weight: 600;">signal</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>AbortSignal</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de; text-align: center;"><code>undefined</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">외부 AbortSignal (내부 타임아웃 Signal과 <code>AbortSignal.any</code>로 자동 합성, 취소 시 재시도 즉시 중단)</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code style="color: #0969da; font-weight: 600;">beforeRequest</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>BeforeRequestInterceptorType | BeforeRequestInterceptorType[]</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de; text-align: center;"><code>undefined</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">요청 전송 전 실행되는 인터셉터 (매 재시도 시에도 재실행)</td>
+          </tr>
+          <tr style="background-color: #fafbfc;">
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code style="color: #0969da; font-weight: 600;">afterResponse</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>AfterResponseInterceptorType | AfterResponseInterceptorType[]</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de; text-align: center;"><code>undefined</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">응답 수신 직후 실행되는 인터셉터 (<code>response.clone()</code> 제공)</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code style="color: #0969da; font-weight: 600;">onError</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;"><code>OnErrorType | OnErrorType[]</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de; text-align: center;"><code>undefined</code></td>
+            <td style="padding: 10px 14px; border: 1px solid #d0d7de;">통신 실패 및 타임아웃 발생 시 실행되는 에러 인터셉터</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Helper Functions -->
+    <h3 style="font-size: 16.5px; font-weight: 600; color: #1f2328; margin: 24px 0 10px 0;">헬퍼 함수 (Helper Functions)</h3>
+    <div style="line-height: 1.8;">
+      <div style="margin-bottom: 16px;">
+        <p style="margin: 0 0 6px 0;"><strong><code style="color: #0969da;">exponentialBackoffRetry(config?): RetryStrategyFunction</code></strong><br>
+        지수 백오프(Exponential Backoff) 기반의 재시도 전략 함수를 생성하는 팩토리 헬퍼입니다.</p>
+        
+        <div style="overflow-x: auto; margin: 6px 0 12px 0;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 13px; border: 1px solid #d0d7de; text-align: left;">
+            <thead>
+              <tr style="background-color: #f6f8fa;">
+                <th style="padding: 8px 12px; border: 1px solid #d0d7de; font-weight: 600; width: 22%;">설정 속성 (<code>config</code>)</th>
+                <th style="padding: 8px 12px; border: 1px solid #d0d7de; font-weight: 600; width: 18%;">타입</th>
+                <th style="padding: 8px 12px; border: 1px solid #d0d7de; font-weight: 600; width: 28%;">기본값</th>
+                <th style="padding: 8px 12px; border: 1px solid #d0d7de; font-weight: 600; width: 32%;">설명</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding: 8px 12px; border: 1px solid #d0d7de;"><code>maxRetries</code></td>
+                <td style="padding: 8px 12px; border: 1px solid #d0d7de;"><code>number</code></td>
+                <td style="padding: 8px 12px; border: 1px solid #d0d7de;"><code>3</code></td>
+                <td style="padding: 8px 12px; border: 1px solid #d0d7de;">최대 재시도 횟수</td>
+              </tr>
+              <tr style="background-color: #fafbfc;">
+                <td style="padding: 8px 12px; border: 1px solid #d0d7de;"><code>initialDelay</code></td>
+                <td style="padding: 8px 12px; border: 1px solid #d0d7de;"><code>number</code></td>
+                <td style="padding: 8px 12px; border: 1px solid #d0d7de;"><code>100</code></td>
+                <td style="padding: 8px 12px; border: 1px solid #d0d7de;">초기 대기 시간 (ms, 100 * factor^(attempt-1))</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 12px; border: 1px solid #d0d7de;"><code>factor</code></td>
+                <td style="padding: 8px 12px; border: 1px solid #d0d7de;"><code>number</code></td>
+                <td style="padding: 8px 12px; border: 1px solid #d0d7de;"><code>2</code></td>
+                <td style="padding: 8px 12px; border: 1px solid #d0d7de;">지수 증가 배수</td>
+              </tr>
+              <tr style="background-color: #fafbfc;">
+                <td style="padding: 8px 12px; border: 1px solid #d0d7de;"><code>statusCodes</code></td>
+                <td style="padding: 8px 12px; border: 1px solid #d0d7de;"><code>number[]</code></td>
+                <td style="padding: 8px 12px; border: 1px solid #d0d7de;"><code>[408, 429, 500, 502, 503, 504]</code></td>
+                <td style="padding: 8px 12px; border: 1px solid #d0d7de;">선택적 재시도 대상 HTTP 상태 코드 목록</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
+        <li style="margin-bottom: 6px;"><strong><code style="color: #0969da;">getData&lt;T&gt;(response: Response): Promise&lt;T | Blob | FormData | string | null&gt;</code></strong><br>
+        Response 헤더의 <code>Content-Type</code>을 기반으로 데이터를 적절한 타입(JSON, Blob, FormData, Text 등)으로 자동 파싱하는 헬퍼입니다.</li>
+        <li style="margin-bottom: 6px;"><strong><code style="color: #0969da;">composeInterceptors&lt;T&gt;(base, custom): T[] | undefined</code></strong><br>
+        기본 인스턴스의 인터셉터와 개별 요청 시 전달된 인터셉터를 순서대로 안전하게 결합합니다.</li>
+        <li style="margin-bottom: 6px;"><strong><code style="color: #0969da;">setInterceptors(mergeInterceptors, interceptors): void</code></strong><br>
+        대상 인터셉터 레지스트리 객체에 새로운 인터셉터 목록을 안전하게 일괄 등록합니다.</li>
+        <li style="margin-bottom: 6px;"><strong><code style="color: #0969da;">mergeFetchOptions(mergeInterceptors, options): TopFetchOptions</code></strong><br>
+        글로벌 인터셉터와 요청별 개별 옵션을 결합합니다.</li>
+        <li style="margin-bottom: 6px;"><strong><code style="color: #0969da;">HttpError</code></strong><br>
+        HTTP 상태 코드(<code>status</code>)와 메시지(<code>message</code>)를 보존하는 전용 Error 클래스입니다.</li>
+        <li style="margin-bottom: 6px;"><strong><code style="color: #0969da;">returnError&lt;T = null&gt;(error: unknown): { status: number; message: string; data: T | null }</code></strong><br>
+        발생한 예외(Error 및 HttpError) 객체를 안전한 표준 에러 구조체(<code>{ status, message, data: null }</code>)로 일괄 변환합니다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="border-top: 1px solid #eaecef; padding-top: 20px; margin-top: 40px; text-align: center; color: #6e7781; font-size: 13px;">
+    top-fetch · 3TOP 커머스플랫폼 1본부 · Zero-Dependency Native Fetch API Wrapper
+  </div>
+
+</div>
+
+</body>
+</html>
