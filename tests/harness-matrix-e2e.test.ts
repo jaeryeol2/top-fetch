@@ -200,43 +200,42 @@ describe('AGENTS.md 8-Environment Matrix & Dynamic Harnessing Suite', () => {
   });
 
   describe('7. Full 8-Environment Matrix Suite Runner', () => {
-    it('AGENTS.md 정의 8대 타겟 환경 매트릭스 일괄 패스 검증', async () => {
+    it('AGENTS.md 정의 8대 타겟 환경 매트릭스 일괄 왕복 검증 (각 환경별 고유 마커로 실제 fetch 응답 검증)', async () => {
+      const pingEnvironment = async (ctx: {
+        environment: string;
+        isBrowser: boolean;
+      }): Promise<void> => {
+        const marker = randomUuid();
+        const target = ctx.isBrowser ? window : globalThis;
+        const mock = setupMockFetch(target, {
+          status: 200,
+          responseBody: JSON.stringify({ marker, environment: ctx.environment }),
+        });
+
+        const client = topFetch.create({ baseURL: 'https://matrix-runner.internal' });
+        const res = await client('/matrix-ping');
+        const data = (await res.getData()) as { marker: string; environment: string };
+
+        if (data.marker !== marker || mock.getCallCount() !== 1) {
+          throw new Error(`Matrix ping verification failed for ${ctx.environment}`);
+        }
+
+        mock.restore();
+      };
+
       const matrixRun = await runMatrixSuites([
-        {
-          environment: TargetEnvironment.VUE_3_CSR,
-          execute: async () => {},
-        },
-        {
-          environment: TargetEnvironment.NUXT_3_DUAL,
-          execute: async () => {},
-        },
-        {
-          environment: TargetEnvironment.REACT_18_19_CSR,
-          execute: async () => {},
-        },
-        {
-          environment: TargetEnvironment.NEXTJS_APP_ROUTER_DUAL,
-          execute: async () => {},
-        },
-        {
-          environment: TargetEnvironment.NESTJS_NODEJS_BACKEND,
-          execute: async () => {},
-        },
-        {
-          environment: TargetEnvironment.JSP_LEGACY_HTML_IIFE,
-          execute: async () => {},
-        },
-        {
-          environment: TargetEnvironment.SERVER_TEMPLATE_ENGINES,
-          execute: async () => {},
-        },
-        {
-          environment: TargetEnvironment.BUNDLE_DIST_INTEGRITY,
-          execute: async () => {},
-        },
+        { environment: TargetEnvironment.VUE_3_CSR, execute: pingEnvironment },
+        { environment: TargetEnvironment.NUXT_3_DUAL, execute: pingEnvironment },
+        { environment: TargetEnvironment.REACT_18_19_CSR, execute: pingEnvironment },
+        { environment: TargetEnvironment.NEXTJS_APP_ROUTER_DUAL, execute: pingEnvironment },
+        { environment: TargetEnvironment.NESTJS_NODEJS_BACKEND, execute: pingEnvironment },
+        { environment: TargetEnvironment.JSP_LEGACY_HTML_IIFE, execute: pingEnvironment },
+        { environment: TargetEnvironment.SERVER_TEMPLATE_ENGINES, execute: pingEnvironment },
+        { environment: TargetEnvironment.BUNDLE_DIST_INTEGRITY, execute: pingEnvironment },
       ]);
 
       expect(matrixRun.passedCount).toBe(8);
+      expect(matrixRun.results.every((r) => r.success)).toBe(true);
     });
   });
 });

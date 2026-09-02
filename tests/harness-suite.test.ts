@@ -293,6 +293,51 @@ describe('AGENTS.md Test Harness Architecture Verification', () => {
 
       assertInstanceIsolation(clientA, clientB);
     });
+
+    it('topFetch.create() 기본 옵션(baseURL/headers)이 개별 호출 옵션과 정확히 상속·병합·오버라이드되어야 한다', async () => {
+      const defaultHeaders = randomHeaders();
+      const overrideAuthValue = `Bearer ${randomString('override-token', 20)}`;
+      const extraHeaderKey = `X-Dynamic-${randomString('hdr', 6)}`;
+      const extraHeaderValue = randomUuid();
+      const overrideBaseURL = `https://override-${randomString('host', 6)}.com`;
+
+      const mock = setupMockFetch(globalThis, {
+        status: 200,
+        responseBody: JSON.stringify({ ok: true }),
+      });
+
+      const client = topFetch.create({
+        baseURL: 'https://default-base.com',
+        headers: defaultHeaders,
+      });
+
+      // 1) 개별 호출에서 baseURL을 지정하지 않으면 기본값이 상속되고,
+      //    동일 키 헤더는 개별 호출 값으로 오버라이드, 그 외 기본 헤더는 그대로 병합(누적) 유지되어야 한다.
+      await client('/inherit-path', {
+        headers: { Authorization: overrideAuthValue, [extraHeaderKey]: extraHeaderValue },
+      });
+      const inheritedCall = mock.getLastCall();
+      expect(inheritedCall?.url).toBe('https://default-base.com/inherit-path');
+      assertHeadersPreserved(inheritedCall?.headers, {
+        Authorization: overrideAuthValue,
+        'X-Request-Id': defaultHeaders['X-Request-Id'],
+        'X-Tenant-Id': defaultHeaders['X-Tenant-Id'],
+        [extraHeaderKey]: extraHeaderValue,
+      });
+
+      // 2) 개별 호출에서 baseURL을 지정하면 기본 인스턴스 설정을 오버라이드해야 한다.
+      await client('/override-path', { baseURL: overrideBaseURL });
+      const overriddenCall = mock.getLastCall();
+      expect(overriddenCall?.url).toBe(`${overrideBaseURL}/override-path`);
+
+      // 3) 개별 호출 옵션이 인스턴스의 기본 옵션 자체를 변형시키면 안 된다.
+      await client('/default-again');
+      const finalCall = mock.getLastCall();
+      expect(finalCall?.url).toBe('https://default-base.com/default-again');
+      assertHeadersPreserved(finalCall?.headers, defaultHeaders);
+
+      mock.restore();
+    });
   });
 
   describe('6. Reporter & README Markdown Generator', () => {

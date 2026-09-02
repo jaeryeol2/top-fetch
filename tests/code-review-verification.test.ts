@@ -1,6 +1,7 @@
 /**
  * @file code-review-verification.test.ts
- * @description top-fetch-code-review.html에서 지적된 8건의 결함 및 개선사항 검증 테스트
+ * @description top-fetch-code-review.html에서 지적된 결함 및 개선사항 중 현재 재현 가능한 6건(#1, #2, #3, #5, #7, Method/Body Discriminated Union) 검증 테스트.
+ *              원본 문서의 #4, #6 항목은 저장소에 근거 문서가 남아있지 않아 이 파일에서 다루지 않는다.
  * @vitest-environment happy-dom
  */
 
